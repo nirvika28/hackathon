@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            display: flex;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .left-panel {
+            flex: 1;
+        }
+
+        .right-panel {
+            flex: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-left: -790px;
+            padding-bottom: 20px;
+        }
+
+        .profile-image-container {
+            width: 50px;
+            height: 43px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: -1000px;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            margin-right: -200px;
+            object-fit: cover;
+        }
+
+        .tab-navigation {
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-button.active {
+            background-color: #fff;
+            color: #333;
+        }
+
+        .balance-card-like-image {
+            background-color: #1E293B; /* Dark background color */
+            color: #CBD5E1; /* Light text color */
+            padding: 20px;
+            border-radius: 10px;
+            width: 440px; /* Adjust width as needed */
+            box-sizing: border-box;
+        }
+
+        .disposable-balance {
+            font-size: 1em;
+            margin-bottom: 10px;
+            color: #94A3B8; /* Slightly lighter text */
+            width: 80px;
+
+        }
+
+        .balance-amount-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .balance-amount-container span {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .balance-amount-input {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #CBD5E1;
+            background-color: transparent;
+            border: none;
+            width: auto;
+            text-align: left;
+            padding: 0;
+            margin: 0;
+             /* Try different scale factors like 0.7, 0.9 */
+           transform-origin: left center; /* Adjust origin if needed for alignment */
+   
+            -moz-appearance: textfield;
+        }
+
+        .balance-amount-input::-webkit-outer-spin-button,
+        .balance-amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .add-funds-box {
+    background-color: transparent; /* This is the key */
+    color: #defa60; /* Blue color for "Add funds +" */
+    border: 1px solid #f2fa60;
+    padding-left:20px;
+    margin-left: -430px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    z-index: 10;
+    font-weight: bold;
+}
+
+        .add-funds {
+            color: inherit;
+            text-decoration: none;
+
+        }
+
+        .financial-tracking {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px; /* Added margin below */
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .tracking-description {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .user-stats-card {
+            background-color: #1E293B; /* Dark background color */
+            color: #CBD5E1; /* Light text color */
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%; /* Make it full width within the left panel */
+            box-sizing: border-box;
+        }
+
+        .user-stats-title {
+            font-size: 1em;
+            color: #94A3B8;
+            margin-bottom: 15px;
+        }
+
+        .user-stats-increase {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4ADE80; /* Green for increase */
+            margin-bottom: 10px;
+        }
+
+        .bar-chart {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bar-label {
+            font-size: 0.7em;
+            color: #94A3B8;
+            margin-top: 5px;
+        }
+
+        .bar-background {
+            background-color: #334155; /* Darker grey */
+            width: 20px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .bar-fill {
+            background-color: #60A5FA; /* Blue fill */
+            width: 20px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* Specific bar heights (adjust these based on the image) */
+        .bar-fill-food { height: 30px; }
+        .bar-fill-travel { height: 60px; }
+        .bar-fill-health { height: 40px; }
+        .bar-fill-shop { height: 80px; background-color: #CBD5E1; /* White for shop */ }
+        .bar-fill-food2 { height: 50px; }
+        .bar-fill-food3 { height: 55px; }
+        .bar-fill-food4 { height: 20px; }
+
+        .expense-tracker-card { /* Ensure this style is present */
+            background-color: #222;
+            color: #fff;
+            padding: 20px;
+          width:500px;
+            border-radius: 10px;
+        }
+
+        .expense-tracker-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: -20px;
+            height: 247px;
+        }
+
+        .expense-chart-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #333;
+            margin: 0 auto 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .expense-chart {
+            width: 100%;
+            height: 100%;
+            
+            
+            border-radius: 50%;
+            background-image: conic-gradient(
+                #f44336 0% 10%,
+                #e91e63 10% 20%,
+                #9c27b0 20% 30%,
+                #673ab7 30% 40%,
+                #3f51b5 40% 50%,
+                #2196f3 50% 60%,
+                #03a9f4 60% 70%,
+                #00bcd4 70% 80%,
+                #009688 80% 90%,
+                #4caf50 90% 100%
+            );
+        }
+
+        .total-expenses {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .expense-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .expense-bar-container {
+            background-color: #333;
+            height: 8px;
+            border-radius: 4px;
+            flex-grow: 1;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+        .num{
+            color: #397793;
+        }
+
+       .expense-bar {
+            background-color: #2196F3;
+            height: 100%;
+            border-radius: 4px;
+            width: 70%;
+        }
+       
+        .add-field {
+            color: #2196F3;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .financial-tracking{
+            border:4px dotted #999; 
+            margin-top: 5px;
+            padding-top: 0px;
+            border-radius: 5px;
+        }
+        /* ... your existing CSS ... */
+
+.add-field-container {
+    position: relative;
+    margin-top: 15px; /* For positioning the suggestions */
+}
+
+#newCategoryInput {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.investment-card {
+    background-color: #1E293B; /* Dark background color */
+    color: #CBD5E1; /* Light text color */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px; /* Add some space above the card */
+}
+
+.investment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.investment-type {
+    font-size: 1.1em;
+    color: #94A3B8;
+}
+
+.investment-balance {
+    font-size: 2.5em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.investment-balance span {
+    margin-right: 5px;
+}
+
+.invest-now-button {
+    background-color: transparent;
+    color: #DEFFA6; /* Light green/yellow */
+    border: 1px solid #DEFFA6;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.invest-now-button:hover {
+    background-color: rgba(222, 255, 166, 0.1); /* Slightly lighter on hover */
+}
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    background-color: #fff;
+    position: absolute;
+    width: 100%;
+    z-index: 11; /* Ensure it's above other elements */
+    display: none; /* Hidden by default */
+    max-height: 150px;
+    color: black;
+    overflow-y: auto;
+}
+
+.suggestions-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0;
+}
+
+#addCategoryButton {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#addCategoryButton:hover {
+    background-color: #0b7dda;
+}
+.emergency-fund-card {
+            background-color: #1E293B; /* Dark background color */
+            color: #CBD5E1; /* Light text color */
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px; /* Add some space above the card */
+            width: 440px; /* Match balance card width */
+            box-sizing: border-box;
+        }
+
+        .emergency-fund-header {
+            font-size: 1.1em;
+            color: #94A3B8;
+            margin-bottom: 10px;
+        }
+
+        .emergency-fund-balance {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .emergency-fund-balance span {
+            margin-right: 5px;
+        }
+
+        .autopay-button {
+            background-color: #2196F3; /* Blue color */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .autopay-button.on {
+            /* You can add specific styles for the "on" state if needed */
+        }
+
+        .autopay-button:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-info">Hello, Alice !</div>
+        <div class="profile-image-container">
+            <img src="alice.jpg" alt="Profile" class="profile-image">
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="left-panel">
+            <div class="tab-navigation">
+                <button class="tab-button active" onclick="switchTabNew('status')">Status</button>
+                <button class="tab-button" onclick="switchTabNew('investment')">Investment</button>
+                <button class="tab-button" onclick="switchTabNew('emergency')">Emergency</button>
+            </div>
+
+            <div id="status" class="tab-content-new active">
+                <div class="balance-card-like-image">
+                    <div class="disposable-balance">Disposable Balance</div>
+                    <div class="balance-amount-container">
+                        <span>₹</span>
+                        <input type="number" id="disposableBalance" class="balance-amount-input" value="8400">
+                        <div class="add-funds-box">
+                            <span class="add-funds">Add funds +</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="financial-tracking">
+                    <p class="num"> Enable financial-tracking</p>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="expenseToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <div class="tracking-description">analyze your expenses to offer smarter insights, personalized nudges, and better savings suggestions.</div>
+                </div>
+                <div class="user-stats-card">
+                    <div class="user-stats-title">User in the Last Month</div>
+                    <div class="user-stats-increase">+3.2% in wants</div>
+                    <div class="bar-chart">
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-food"></div>
+                            </div>
+                            <div class="bar-label">FOOD</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-travel"></div>
+                            </div>
+                            <div class="bar-label">TRAVEL</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-health"></div>
+                            </div>
+                            <div class="bar-label">HEALTH</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-shop"></div>
+                            </div>
+                            <div class="bar-label">SHOP</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-food2"></div>
+                            </div>
+                            <div class="bar-label">FOOD</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-food3"></div>
+                            </div>
+                            <div class="bar-label">FOOD</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-background" style="height: 80px;">
+                                <div class="bar-fill bar-fill-food4"></div>
+                            </div>
+                            <div class="bar-label">FOOD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="investment" class="tab-content-new" style="display: none;">
+                <div class="expense-tracker-card">
+                    <div class="expense-tracker-title">Investments</div>
+                    <div class="investment-card">
+                        <div class="investment-header">
+                            <span class="investment-type">in gold</span>
+                        </div>
+                        <div class="investment-balance">
+                            <span>₹</span> <span id="investmentBalance">0</span>
+                        </div>
+                        <button class="invest-now-button">Invest now +</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="emergency" class="tab-content-new" style="display: none;">
+                <div class="emergency-fund-card">
+                    <div class="emergency-fund-header">
+                        Emergency funds
+                    </div>
+                    <div class="emergency-fund-balance">
+                        <span>₹</span> <span id="emergencyBalance">0</span>
+                    </div>
+                    <button class="autopay-button on">Autopay on</button>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div id="expenseTrackerBox" class="expense-tracker-card" style="display: block;">
+                <div class="expense-tracker-title">Spending Overview</div>
+                <div class="expense-chart-container">
+                    <div class="expense-chart"></div>
+                    <div class="total-expenses">
+                        Total Spent:<br>
+                        ₹ 5,200
+                    </div>
+                </div>
+                <div class="expense-item" data-category="groceries">
+                    <div class="expense-label">
+                        <span>Groceries</span>
+                    </div>
+                    <div class="amount-container">
+                        <input type="number" class="edit-input initial-amount" value="2100" maxlength="10">
+                        <input type="number" class="edit-input expense-limit" placeholder="Set Limit (₹)" maxlength="10">
+                    </div>
+                    <div class="expense-bar-container">
+                        <div class="expense-bar" style="width: 40.38%;"></div>
+                    </div>
+                </div>
+
+                <div class="expense-item" data-category="fun">
+                    <div class="expense-label">
+                        <span>Fun</span>
+                    </div>
+                    <div class="amount-container">
+                        <input type="number" class="edit-input initial-amount" value="1500" maxlength="10">
+                        <input type="number" class="edit-input expense-limit" placeholder="Set Limit (₹)" maxlength="10">
+                    </div>
+                    <div class="expense-bar-container">
+                        <div class="expense-bar" style="width: 28.85%;"></div>
+                    </div>
+                </div>
+
+                <div class="expense-item" data-category="commute">
+                    <div class="expense-label">
+                        <span>Commute</span>
+                    </div>
+                    <div class="amount-container">
+                        <input type="number" class="edit-input initial-amount" value="1600" maxlength="10">
+                        <input type="number" class="edit-input expense-limit" placeholder="Set Limit (₹)" maxlength="10">
+                    </div>
+                    <div class="expense-bar-container">
+                        <div class="expense-bar" style="width: 30.77%;"></div>
+                    </div>
+                </div>
+
+                <div class="add-field-container">
+                    <div id="addCategoryTrigger" class="add-field">+ Add Field</div>
+                    <div id="newCategoryInputContainer" style="display: none;">
+                        <input type="text" id="newCategoryInput" placeholder="Enter new category">
+                        <ul id="categorySuggestions" class="suggestions-list"></ul>
+                        <input type="number" id="newCategoryAmount" placeholder="Enter amount (₹)">
+                        <input type="number" id="newCategoryLimit" placeholder="Enter limit (₹)">
+                        <button id="addCategoryButton">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+<script>
+    const expenseToggle = document.getElementById('expenseToggle');
+    const expenseTrackerBox = document.getElementById('expenseTrackerBox');
+    const addCategoryTrigger = document.getElementById('addCategoryTrigger');
+    const newCategoryInputContainer = document.getElementById('newCategoryInputContainer');
+    const newCategoryInput = document.getElementById('newCategoryInput');
+    const categorySuggestions = document.getElementById('categorySuggestions');
+    const newCategoryAmount = document.getElementById('newCategoryAmount');
+    const addCategoryButton = document.getElementById('addCategoryButton');
+    const expenseItemsContainer = expenseTrackerBox.querySelectorAll('.expense-item')[expenseTrackerBox.querySelectorAll('.expense-item').length - 1].parentNode;
+    const totalExpensesElement = expenseTrackerBox.querySelector('.total-expenses');
+    const initialAmountInputs = document.querySelectorAll('.initial-amount');
+    let totalSpent = 0;
+
+    // Calculate initial total spent
+    initialAmountInputs.forEach(input => {
+        totalSpent += parseFloat(input.value) || 0;
+    });
+    updateTotalSpentUI();
+
+    function updateTotalSpentUI() {
+        if (totalExpensesElement) {
+            totalExpensesElement.innerHTML = `
+                Total Spent:<br>
+                ₹ ${totalSpent.toFixed(2)}
+            `;
+        }
+    }
+
+    initialAmountInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            let newTotal = 0;
+            const expenseItems = document.querySelectorAll('.expense-item');
+            expenseItems.forEach(item => {
+                const amountInput = item.querySelector('.edit-input');
+                const bar = item.querySelector('.expense-bar');
+                const amount = parseFloat(amountInput.value) || 0;
+                newTotal += amount;
+                if (bar) {
+                    bar.style.width = `${(amount / newTotal) * 100}%`;
+                }
+            });
+            totalSpent = newTotal;
+            updateTotalSpentUI();
+        });
+    });
+
+    addCategoryTrigger.addEventListener('click', () => {
+        addCategoryTrigger.style.display = 'none';
+        newCategoryInputContainer.style.display = 'block';
+        newCategoryInput.focus();
+    });
+
+    newCategoryInput.addEventListener('input', () => {
+        const inputText = newCategoryInput.value.toLowerCase();
+        const filteredSuggestions = predefinedCategories.filter(category =>
+            category.toLowerCase().startsWith(inputText)
+        );
+        displaySuggestions(filteredSuggestions);
+    });
+
+    function displaySuggestions(suggestions) {
+        categorySuggestions.innerHTML = '';
+        if (suggestions.length > 0 && newCategoryInput.value.trim() !== '') {
+            suggestions.forEach(suggestion => {
+                const li = document.createElement('li');
+                li.textContent = suggestion;
+                li.addEventListener('click', () => {
+                    newCategoryInput.value = suggestion;
+                    categorySuggestions.style.display = 'none';
+                    newCategoryAmount.focus();
+                });
+                categorySuggestions.appendChild(li);
+            });
+            categorySuggestions.style.display = 'block';
+        } else {
+            categorySuggestions.style.display = 'none';
+        }
+    }
+
+    newCategoryInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            categorySuggestions.style.display = 'none';
+        }, 200);
+    });
+
+    addCategoryButton.addEventListener('click', () => {
+        const newCategoryName = newCategoryInput.value.trim();
+        const amount = parseFloat(newCategoryAmount.value);
+
+        if (newCategoryName !== '' && !isNaN(amount)) {
+            addNewExpenseItem(newCategoryName, amount);
+            newCategoryInput.value = '';
+            newCategoryAmount.value = '';
+            newCategoryInputContainer.style.display = 'none';
+            addCategoryTrigger.style.display = 'block';
+        } else if (newCategoryName === '') {
+            alert('Please enter a category name.');
+        } else if (isNaN(amount)) {
+            alert('Please enter a valid amount.');
+        }
+    });
+
+    newCategoryInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            newCategoryAmount.focus();
+        }
+    });
+
+    newCategoryAmount.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            addCategoryButton.click();
+        }
+    });
+
+    function addNewExpenseItem(categoryName, amount) {
+        const newExpense = document.createElement('div');
+        newExpense.classList.add('expense-item');
+        const percentage = (amount / totalSpent) * 100;
+        newExpense.innerHTML = `
+            <div class="expense-label">
+                <span>${categoryName}</span>
+            </div>
+            <div class="amount-container">
+                <input type="number" class="edit-input" value="${amount.toFixed(0)}">
+            </div>
+            <div class="expense-bar-container">
+                <div class="expense-bar" style="width: ${percentage}%;"></div>
+            </div>
+        `;
+        expenseItemsContainer.insertBefore(newExpense, document.querySelector('.add-field-container'));
+
+        totalSpent += amount;
+        updateTotalSpentUI();
+        const newInput = newExpense.querySelector('.edit-input');
+        newInput.addEventListener('change', function() {
+            let newTotal = 0;
+            const expenseItems = document.querySelectorAll('.expense-item');
+            expenseItems.forEach(item => {
+                const amountInput = item.querySelector('.edit-input');
+                const bar = item.querySelector('.expense-bar');
+                const amount = parseFloat(amountInput.value) || 0;
+                newTotal += amount;
+                if (bar) {
+                    bar.style.width = `${(amount / newTotal) * 100}%`;
+                }
+            });
+            totalSpent = newTotal;
+            updateTotalSpentUI();
+        });
+    }
+
+    const statusTab = document.querySelector('.tab-button.active');
+    const investmentTab = document.getElementById('investmentTab');
+    const emergencyTab = document.getElementById('emergencyTab');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content-new');
+
+    function switchTabNew(tabId) {
+        tabContents.forEach(content => {
+            content.style.display = 'none';
+        });
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+
+        document.getElementById(tabId).style.display = 'block';
+        const activeButton = document.querySelector(`.tab-button[onclick="switchTabNew('${tabId}')"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+
+        if (tabId === 'investment') {
+            // Call function to get investment data and update UI
+            displayInvestmentData();
+        } else if (tabId === 'emergency') {
+            // Call function to get emergency data and update UI
+            displayEmergencyFundData();
+        }
+    }
+
+    function displayInvestmentData() {
+        // For now, let's hardcode some investment data
+        const investmentBalanceElement = document.getElementById('investmentBalance');
+        if (investmentBalanceElement) {
+            investmentBalanceElement.textContent = '1,500'; // Example value
+        }
+    }
+
+    function displayEmergencyFundData() {
+        // For now, let's hardcode some emergency fund data
+        const emergencyBalanceElement = document.getElementById('emergencyBalance');
+        if (emergencyBalanceElement) {
+            emergencyBalanceElement.textContent = '2,300'; // Example value
+        }
+    }
+
+    const addFundsBox = document.querySelector('.add-funds-box');
+    addFundsBox.addEventListener('click', function() {
+        alert('Add funds functionality will be implemented here.');
+    });
+
+    // Initial active tab on load (optional - if 'Status' should be active by default, it already is)
+    // switchTabNew('status');
+
+    // Call these to load initial data if the Investment or Emergency tab is the default
+    // if (document.querySelector('.tab-button.active')?.textContent === 'Investment') {
+    //     displayInvestmentData();
+    // } else if (document.querySelector('.tab-button.active')?.textContent === 'Emergency') {
+    //     displayEmergencyFundData();
+    // }
+    const predefinedCategories = [
+        "Food", "Groceries", "Rent", "Utilities", "Transportation", "Entertainment", "Shopping", "Travel", "Health", "Education", "Savings", "Others"
+    ];
+</script>
+</body>
+</html>

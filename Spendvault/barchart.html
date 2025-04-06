@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockBank Monthly Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1d1d1d; /* Set background to black */
+            color: white; /* Set text color to white for better contrast */
+        }
+        #chart-container {
+            width: 100%;
+            height: 100%;
+            background-color: #1d1d1d;
+            border-radius: 16px;
+            padding: 10px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Monthly Spending Summary</h1>
+
+<div id="chart-container">
+    <canvas id="categoryChart"></canvas>
+</div>
+
+<script>
+    // Fetch data from your FastAPI backend
+    async function fetchData() {
+        const response = await fetch("http://127.0.0.1:8000/category-monthly-summary");
+        const data = await response.json();
+        return data;
+    }
+
+    // Render the chart once data is fetched
+    fetchData().then(data => {
+        const categories = data.summary.map(item => item.category);
+        const previousMonthData = data.summary.map(item => item.previous);
+        const currentMonthData = data.summary.map(item => item.current);
+
+        // Prepare the chart data and colors based on conditions
+        const barColors = currentMonthData.map((current, index) => {
+            const previous = previousMonthData[index];
+            // If current is more than previous, set color to white
+            if (current > previous) {
+                return 'white';
+            }
+            // If current is less or equal to previous, set color to blue
+            return 'blue';
+        });
+
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        
+        // Create the bar chart
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: categories,
+                datasets: [
+                    {
+                        label: 'Previous Month',
+                        data: previousMonthData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue for previous month
+                    },
+                    {
+                        label: 'Current Month',
+                        data: currentMonthData,
+                        backgroundColor: barColors, // Dynamic color based on the condition
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.dataset.label}: $${tooltipItem.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
